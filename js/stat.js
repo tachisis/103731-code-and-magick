@@ -12,9 +12,16 @@ var cloudParams = {
   width: 420,
   height: 270,
   radius: 20,
-  shadowDelta: 10,
-  cloudFill: '#fff',
-  shadowFill: 'rgba(0, 0, 0, 0.7)'
+  fill: '#fff'
+};
+
+var shadowParams = {
+  x: 110,
+  y: 20,
+  width: 420,
+  height: 270,
+  radius: 20,
+  fill: 'rgba(0, 0, 0, 0.7)'
 };
 
 var histogramParams = {
@@ -23,7 +30,7 @@ var histogramParams = {
   indent: 50,
   nameMargin: 5,
   timeMargin: -20,
-  initialX: 120,
+  initialX: 155,
   initialY: 95
 };
 
@@ -34,49 +41,46 @@ function printText(ctx, text, x, y, params) {
   ctx.fillText(text, x, y);
 }
 
-function drawCloud(context, x, y, width, height, radius, fill, shadow) {
-  if (shadow) {
-    x += shadow;
-    y += shadow;
-  }
+function drawCloud(ctx, params) {
+  var x = params.x;
+  var y = params.y;
+  var width = params.width;
+  var height = params.height;
+  var radius = params.radius;
+  var fill = params.fill;
   var right = x + width;
   var bottom = y + height;
-  context.fillStyle = fill;
-  context.beginPath();
-  context.moveTo(x + radius, y);
-  context.lineTo(right - radius, y);
-  context.quadraticCurveTo(right, y, right, y + radius);
-  context.lineTo(right, y + height - radius);
-  context.quadraticCurveTo(right, bottom, right - radius, bottom);
-  context.lineTo(right - radius, bottom + radius);
-  context.lineTo(right - radius * 2, bottom);
-  context.lineTo(x + radius, bottom);
-  context.quadraticCurveTo(x, bottom, x, bottom - radius);
-  context.lineTo(x, y + radius);
-  context.quadraticCurveTo(x, y, x + radius, y);
-  context.fill();
-  context.closePath();
+
+  ctx.fillStyle = fill;
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(right - radius, y);
+  ctx.quadraticCurveTo(right, y, right, y + radius);
+  ctx.lineTo(right, y + height - radius);
+  ctx.quadraticCurveTo(right, bottom, right - radius, bottom);
+  ctx.lineTo(right - radius, bottom + radius);
+  ctx.lineTo(right - radius * 2, bottom);
+  ctx.lineTo(x + radius, bottom);
+  ctx.quadraticCurveTo(x, bottom, x, bottom - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.fill();
+  ctx.closePath();
 }
 
-function getMaxTime(times) {
-  var max = -1;
-
-  for (var i = 0; i < times.length; i++) {
-    var time = times[i];
-    if (time > max) {
-      max = time;
-    }
-  }
-
+function getMax(array) {
+  var max = Math.max.apply(null, array);
   return max;
 }
 
-function getOpacity(min, max) {
-  return (Math.random() * (max - min) + min).toFixed(1);
+function getRandom(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
 function drawHistBar(ctx, barX, barY, barHeight, name, time) {
-  ctx.fillStyle = name === 'Вы' ? 'rgba(255, 0, 0, 1)' : 'rgba(0, 0, 255, ' + getOpacity(0.5, 1) + ')';
+  ctx.fillStyle = name === 'Вы'
+    ? 'rgba(255, 0, 0, 1)'
+    : 'rgba(0, 0, 255, ' + getRandom(0.5, 1).toFixed(1) + ')';
 
   ctx.fillRect(barX, barY, histogramParams.barWidth, barHeight);
 
@@ -85,14 +89,13 @@ function drawHistBar(ctx, barX, barY, barHeight, name, time) {
 }
 
 window.renderStatistics = function (ctx, names, times) {
-
-  drawCloud(ctx, cloudParams.x, cloudParams.y, cloudParams.width, cloudParams.height, cloudParams.radius, cloudParams.shadowFill, cloudParams.shadowDelta);
-  drawCloud(ctx, cloudParams.x, cloudParams.y, cloudParams.width, cloudParams.height, cloudParams.radius, cloudParams.cloudFill);
+  drawCloud(ctx, shadowParams);
+  drawCloud(ctx, cloudParams);
 
   printText(ctx, 'Ура, вы победили!', cloudParams.width / 2, 20, textParams);
   printText(ctx, 'Список результатов:', cloudParams.width / 2, 40, textParams);
 
-  var step = histogramParams.height / getMaxTime(times);
+  var step = histogramParams.height / getMax(times);
 
   for (var i = 0; i < times.length; i++) {
     var barHeight = times[i] * step;
