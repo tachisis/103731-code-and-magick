@@ -42,35 +42,24 @@ function printText(ctx, text, x, y, params) {
 }
 
 function drawCloud(ctx, params) {
-  var x = params.x;
-  var y = params.y;
-  var width = params.width;
-  var height = params.height;
-  var radius = params.radius;
-  var fill = params.fill;
-  var right = x + width;
-  var bottom = y + height;
+  var right = params.x + params.width;
+  var bottom = params.y + params.height;
 
-  ctx.fillStyle = fill;
+  ctx.fillStyle = params.fill;
   ctx.beginPath();
-  ctx.moveTo(x + radius, y);
-  ctx.lineTo(right - radius, y);
-  ctx.quadraticCurveTo(right, y, right, y + radius);
-  ctx.lineTo(right, y + height - radius);
-  ctx.quadraticCurveTo(right, bottom, right - radius, bottom);
-  ctx.lineTo(right - radius, bottom + radius);
-  ctx.lineTo(right - radius * 2, bottom);
-  ctx.lineTo(x + radius, bottom);
-  ctx.quadraticCurveTo(x, bottom, x, bottom - radius);
-  ctx.lineTo(x, y + radius);
-  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.moveTo(params.x + params.radius, params.y);
+  ctx.lineTo(right - params.radius, params.y);
+  ctx.quadraticCurveTo(right, params.y, right, params.y + params.radius);
+  ctx.lineTo(right, params.y + params.height - params.radius);
+  ctx.quadraticCurveTo(right, bottom, right - params.radius, bottom);
+  ctx.lineTo(right - params.radius, bottom + params.radius);
+  ctx.lineTo(right - params.radius * 2, bottom);
+  ctx.lineTo(params.x + params.radius, bottom);
+  ctx.quadraticCurveTo(params.x, bottom, params.x, bottom - params.radius);
+  ctx.lineTo(params.x, params.y + params.radius);
+  ctx.quadraticCurveTo(params.x, params.y, params.x + params.radius, params.y);
   ctx.fill();
   ctx.closePath();
-}
-
-function getMax(array) {
-  var max = Math.max.apply(null, array);
-  return max;
 }
 
 function getRandom(min, max) {
@@ -95,7 +84,7 @@ window.renderStatistics = function (ctx, names, times) {
   printText(ctx, 'Ура, вы победили!', cloudParams.width / 2, 20, textParams);
   printText(ctx, 'Список результатов:', cloudParams.width / 2, 40, textParams);
 
-  var step = histogramParams.height / getMax(times);
+  var step = histogramParams.height / Math.max.apply(null, times);
 
   for (var i = 0; i < times.length; i++) {
     var barHeight = times[i] * step;
