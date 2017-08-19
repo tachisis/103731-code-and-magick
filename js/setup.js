@@ -8,13 +8,14 @@ var WIZARDS_SRC = {
 };
 
 var similarWizardTemplate = document
-                              .querySelector('#similar-wizard-template')
-                              .content
-                              .querySelector('.setup-similar-item');
+    .querySelector('#similar-wizard-template')
+    .content
+    .querySelector('.setup-similar-item');
 
 function shuffle(array) {
   var current = array.length;
-  var tmp, random;
+  var tmp;
+  var random;
 
   while (current) {
     random = Math.floor(Math.random() * current);
